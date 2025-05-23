@@ -17,8 +17,8 @@ const ThemeToggle = () => {
     <Button
       variant="outline"
       size="sm"
-      className="bg-white/10 text-white border-white/20 hover:bg-white/30 hover:border-white/40 transition-colors duration-200 
-      dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:hover:text-white"
+      className="bg-white/10 text-white border-white/20 hover:bg-white/30 hover:text-white transition-colors duration-200 
+      dark:bg-gray-800/60 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       {theme === "dark" ? (
@@ -124,19 +124,19 @@ const LiquidityPoolSimulator = () => {
 
   // Add state for feedback messages
   const [feedbackMessage, setFeedbackMessage] = useState<{
-    type: 'success' | 'error';
-    text: string;
-  } | null>(null);
+    type: "success" | "error"
+    text: string
+  } | null>(null)
 
   // Clear feedback after 3 seconds
   useEffect(() => {
     if (feedbackMessage) {
       const timer = setTimeout(() => {
-        setFeedbackMessage(null);
-      }, 3000);
-      return () => clearTimeout(timer);
+        setFeedbackMessage(null)
+      }, 3000)
+      return () => clearTimeout(timer)
     }
-  }, [feedbackMessage]);
+  }, [feedbackMessage])
 
   // Add useEffect to load data from localStorage on component mount
   useEffect(() => {
@@ -164,7 +164,7 @@ const LiquidityPoolSimulator = () => {
       transactions,
       batchTrades,
       liquidityOperations,
-      inputsLocked
+      inputsLocked,
     }
     localStorage.setItem("liquidityPoolData", JSON.stringify(dataToSave))
   }, [pool, priceHistory, transactions, batchTrades, liquidityOperations, inputsLocked])
@@ -195,7 +195,7 @@ const LiquidityPoolSimulator = () => {
   useEffect(() => {
     const price = getCurrentPrice()
     const priceUSD = getToken2PriceUSD()
-    
+
     // Only add new price point if there's a meaningful change
     setPriceHistory((prev) => {
       // Don't add duplicate entries if values haven't changed
@@ -205,7 +205,7 @@ const LiquidityPoolSimulator = () => {
           return prev
         }
       }
-      
+
       return [
         ...prev,
         {
@@ -242,21 +242,21 @@ const LiquidityPoolSimulator = () => {
 
   // Validation function for token2 amounts
   const validateToken2Amount = (amount: number, operation: "add" | "remove" | "sell") => {
-    const availableSupply = pool.token2TotalSupply - pool.token2Reserve;
+    const availableSupply = pool.token2TotalSupply - pool.token2Reserve
 
     if (operation === "add" && amount > availableSupply) {
-      return `Cannot add ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${availableSupply.toLocaleString()} available from total supply.`;
+      return `Cannot add ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${availableSupply.toLocaleString()} available from total supply.`
     }
 
     if (operation === "remove" && amount > pool.token2Reserve) {
-      return `Cannot remove ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${pool.token2Reserve.toLocaleString()} available in pool.`;
+      return `Cannot remove ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${pool.token2Reserve.toLocaleString()} available in pool.`
     }
 
     if (operation === "sell" && amount > availableSupply) {
-      return `Cannot sell ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${availableSupply.toLocaleString()} available from circulating supply.`;
+      return `Cannot sell ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${availableSupply.toLocaleString()} available from circulating supply.`
     }
 
-    return null;
+    return null
   }
 
   const addBatchTrade = () => {
@@ -321,8 +321,8 @@ const LiquidityPoolSimulator = () => {
       if (batchTrade.type === "sell") {
         const validationError = validateToken2Amount(batchTrade.amount, "sell")
         if (validationError) {
-          setFeedbackMessage({ type: 'error', text: validationError });
-          return [];
+          setFeedbackMessage({ type: "error", text: validationError })
+          return []
         }
       }
     }
@@ -374,10 +374,10 @@ const LiquidityPoolSimulator = () => {
     setTransactions((prev) => [...results, ...prev].slice(0, 10))
 
     if (results.length > 0) {
-      setFeedbackMessage({ 
-        type: 'success', 
-        text: `Executed ${results.length} trades successfully!` 
-      });
+      setFeedbackMessage({
+        type: "success",
+        text: `Executed ${results.length} trades successfully!`,
+      })
     }
 
     return results
@@ -394,14 +394,14 @@ const LiquidityPoolSimulator = () => {
       if (liquidityOp.type === "add") {
         const validationError = validateToken2Amount(liquidityOp.token2Amount, "add")
         if (validationError) {
-          setFeedbackMessage({ type: 'error', text: validationError });
-          return [];
+          setFeedbackMessage({ type: "error", text: validationError })
+          return []
         }
       } else {
         const validationError = validateToken2Amount(liquidityOp.token2Amount, "remove")
         if (validationError) {
-          setFeedbackMessage({ type: 'error', text: validationError });
-          return [];
+          setFeedbackMessage({ type: "error", text: validationError })
+          return []
         }
       }
     }
@@ -440,16 +440,16 @@ const LiquidityPoolSimulator = () => {
           liquidityOp.token1Amount > currentPool.token1Reserve ||
           liquidityOp.token2Amount > currentPool.token2Reserve
         ) {
-          setFeedbackMessage({ type: 'error', text: "Cannot remove more liquidity than available in pool" });
-          return;
+          setFeedbackMessage({ type: "error", text: "Cannot remove more liquidity than available in pool" })
+          return
         }
 
         const newToken1Reserve = currentPool.token1Reserve - liquidityOp.token1Amount
         const newToken2Reserve = currentPool.token2Reserve - liquidityOp.token2Amount
 
         if (newToken1Reserve <= 0 || newToken2Reserve <= 0) {
-          setFeedbackMessage({ type: 'error', text: "Cannot remove all liquidity from pool" });
-          return;
+          setFeedbackMessage({ type: "error", text: "Cannot remove all liquidity from pool" })
+          return
         }
 
         const newTransaction: Transaction = {
@@ -480,10 +480,10 @@ const LiquidityPoolSimulator = () => {
     setTransactions((prev) => [...results, ...prev].slice(0, 20))
 
     if (results.length > 0) {
-      setFeedbackMessage({ 
-        type: 'success', 
-        text: `Executed ${results.length} liquidity operations successfully!` 
-      });
+      setFeedbackMessage({
+        type: "success",
+        text: `Executed ${results.length} liquidity operations successfully!`,
+      })
     }
 
     return results
@@ -491,23 +491,23 @@ const LiquidityPoolSimulator = () => {
 
   const resetPool = () => {
     if (window.confirm("Are you sure you want to reset the pool? All your data will be lost.")) {
-      const initialToken2Reserve = 10_000_000;
+      const initialToken2Reserve = 10_000_000
       setPool((prev) => ({
         ...prev,
         token1Reserve: 3.8,
         token2Reserve: initialToken2Reserve,
-      }));
-      setPriceHistory([]);
-      setTransactions([]);
-      setInputsLocked(false);
-      
+      }))
+      setPriceHistory([])
+      setTransactions([])
+      setInputsLocked(false)
+
       // Clear saved data from localStorage
-      localStorage.removeItem("liquidityPoolData");
-      
-      setFeedbackMessage({ 
-        type: 'success', 
-        text: 'Pool has been reset successfully' 
-      });
+      localStorage.removeItem("liquidityPoolData")
+
+      setFeedbackMessage({
+        type: "success",
+        text: "Pool has been reset successfully",
+      })
     }
   }
 
@@ -543,7 +543,7 @@ const LiquidityPoolSimulator = () => {
   return (
     <div className="w-full max-w-7xl mx-auto">
       <Card className="w-full border-0 shadow-none bg-white dark:bg-gray-900 rounded-xl">
-        <CardHeader className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white p-6 rounded-t-xl flex flex-row items-center justify-between w-full">
+        <CardHeader className="bg-gradient-to-r from-teal-600 to-emerald-500 text-white p-6 rounded-t-xl flex flex-row items-center justify-between w-full">
           <div className="flex flex-col">
             <CardTitle className="text-2xl font-bold">Liquidity Pool Simulator</CardTitle>
             <p className="text-sm text-teal-100">Automated Market Maker (AMM) Simulation</p>
@@ -553,8 +553,8 @@ const LiquidityPoolSimulator = () => {
             <Button
               variant="outline"
               size="sm"
-              className="bg-white/10 text-white border-white/20 hover:bg-white/30 hover:border-white/40 transition-colors duration-200 
-              dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:hover:text-white"
+              className="bg-white/10 text-white border-white/20 hover:bg-white/30 hover:text-white transition-colors duration-200 
+              dark:bg-gray-800/60 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white"
               onClick={resetPool}
             >
               <RefreshCw className="mr-1 h-4 w-4" /> Reset
@@ -563,11 +563,13 @@ const LiquidityPoolSimulator = () => {
         </CardHeader>
 
         {feedbackMessage && (
-          <div className={`px-4 py-2 mb-2 text-sm rounded-md ${
-            feedbackMessage.type === 'success' 
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-          }`}>
+          <div
+            className={`px-4 py-2 mb-2 text-sm rounded-md ${
+              feedbackMessage.type === "success"
+                ? "bg-green-100 text-green-800 dark:bg-green-900/70 dark:text-green-100 dark:border dark:border-green-800"
+                : "bg-red-100 text-red-800 dark:bg-red-900/70 dark:text-red-100 dark:border dark:border-red-800"
+            }`}
+          >
             {feedbackMessage.text}
           </div>
         )}
@@ -815,13 +817,13 @@ const LiquidityPoolSimulator = () => {
                   </div>
                 </div>
 
-                <div className="w-full h-80 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl p-3 border border-gray-200 dark:border-gray-700 shadow-none">
+                <div className="w-full h-80 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800/80 rounded-xl p-3 border border-gray-200 dark:border-gray-700 shadow-none">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={priceHistory} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
                       <defs>
                         <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                          <stop offset="5%" stopColor={darkMode ? "#0d9488" : "#10b981"} stopOpacity={0.8} />
+                          <stop offset="95%" stopColor={darkMode ? "#0d9488" : "#10b981"} stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? "#374151" : "#e5e7eb"} vertical={false} />
@@ -831,7 +833,7 @@ const LiquidityPoolSimulator = () => {
                         fontSize={11}
                         tickLine={false}
                         axisLine={{ stroke: darkMode ? "#4b5563" : "#d1d5db" }}
-                        tickFormatter={(value) => value.split(':')[0] + ':' + value.split(':')[1]} // Shorter time format
+                        tickFormatter={(value) => value.split(":")[0] + ":" + value.split(":")[1]} // Shorter time format
                       />
                       <YAxis
                         tickFormatter={(value) => `$${value.toFixed(6)}`}
@@ -839,7 +841,7 @@ const LiquidityPoolSimulator = () => {
                         fontSize={11}
                         tickLine={false}
                         axisLine={{ stroke: darkMode ? "#4b5563" : "#d1d5db" }}
-                        domain={['auto', 'auto']} // Use auto scaling for better visualization
+                        domain={["auto", "auto"]} // Use auto scaling for better visualization
                       />
                       <Tooltip
                         formatter={(value) => [`$${Number(value).toFixed(6)}`, `${pool.token2Symbol} Price`]}
@@ -858,7 +860,7 @@ const LiquidityPoolSimulator = () => {
                       <Area
                         type="monotone"
                         dataKey="priceUSD"
-                        stroke="#10b981"
+                        stroke={darkMode ? "#0d9488" : "#10b981"}
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorPrice)"
@@ -867,14 +869,19 @@ const LiquidityPoolSimulator = () => {
                       <Line
                         type="monotone"
                         dataKey="priceUSD"
-                        stroke="#10b981"
+                        stroke={darkMode ? "#0d9488" : "#10b981"}
                         strokeWidth={3}
-                        dot={{ r: 3, fill: "#10b981", strokeWidth: 2, stroke: darkMode ? "#374151" : "white" }}
+                        dot={{
+                          r: 3,
+                          fill: darkMode ? "#0d9488" : "#10b981",
+                          strokeWidth: 2,
+                          stroke: darkMode ? "#374151" : "white",
+                        }}
                         activeDot={{
                           r: 6,
-                          fill: "#059669",
+                          fill: darkMode ? "#14b8a6" : "#059669",
                           strokeWidth: 0,
-                          shadow: "0 0 10px rgba(16, 185, 129, 0.5)",
+                          shadow: `0 0 10px ${darkMode ? "rgba(20, 184, 166, 0.5)" : "rgba(16, 185, 129, 0.5)"}`,
                         }}
                       />
                     </LineChart>
@@ -986,7 +993,7 @@ const LiquidityPoolSimulator = () => {
                 </div>
                 <Button
                   onClick={simulatePoolConfig}
-                  className="w-full mt-6 bg-teal-600 hover:bg-teal-700 text-white py-5 text-sm font-medium"
+                  className="w-full mt-6 bg-teal-600 hover:bg-teal-700 text-white py-5 text-sm font-medium dark:bg-teal-700 dark:hover:bg-teal-600 dark:text-white"
                   disabled={inputsLocked}
                 >
                   <Play className="mr-2 h-5 w-5" /> Simulate with Current Configuration
@@ -1021,8 +1028,8 @@ const LiquidityPoolSimulator = () => {
                             <Button
                               className={`flex-1 rounded-none ${
                                 batchTrade.type === "buy"
-                                  ? "bg-teal-600 hover:bg-teal-700 text-white"
-                                  : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50"
+                                  ? "bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-700 dark:hover:bg-teal-600"
+                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                               }`}
                               onClick={() => updateBatchTrade(index, "type", "buy")}
                             >
@@ -1031,8 +1038,8 @@ const LiquidityPoolSimulator = () => {
                             <Button
                               className={`flex-1 rounded-none ${
                                 batchTrade.type === "sell"
-                                  ? "bg-teal-600 hover:bg-teal-700 text-white"
-                                  : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50"
+                                  ? "bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-700 dark:hover:bg-teal-600"
+                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                               }`}
                               onClick={() => updateBatchTrade(index, "type", "sell")}
                             >
@@ -1118,7 +1125,7 @@ const LiquidityPoolSimulator = () => {
                     <Button
                       variant="outline"
                       onClick={addBatchTrade}
-                      className="flex-1 border-teal-200 text-teal-700 dark:text-teal-300 hover:bg-teal-50"
+                      className="flex-1 border-teal-200 text-teal-700 hover:bg-teal-50 dark:border-teal-800 dark:text-teal-300 dark:hover:bg-teal-900/30"
                     >
                       <Plus className="mr-2 h-4 w-4" /> Add Trade
                     </Button>
@@ -1128,13 +1135,13 @@ const LiquidityPoolSimulator = () => {
                         const results = executeBatchTrades()
                         const validResults = results.filter((r) => r.inputAmount > 0)
                         if (validResults.length > 0) {
-                          setFeedbackMessage({ 
-                            type: 'success', 
-                            text: `Executed ${validResults.length} trades successfully!` 
-                          });
+                          setFeedbackMessage({
+                            type: "success",
+                            text: `Executed ${validResults.length} trades successfully!`,
+                          })
                         }
                       }}
-                      className="flex-1 bg-teal-600 hover:bg-teal-700"
+                      className="flex-1 bg-teal-600 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-600"
                       disabled={batchTrades.every((trade) => !trade.amount || Number(trade.amount) <= 0)}
                     >
                       Execute All Trades
@@ -1173,8 +1180,8 @@ const LiquidityPoolSimulator = () => {
                             <Button
                               className={`flex-1 rounded-none ${
                                 liquidityOp.type === "add"
-                                  ? "bg-teal-600 hover:bg-teal-700 text-white"
-                                  : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50"
+                                  ? "bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-700 dark:hover:bg-teal-600"
+                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                               }`}
                               onClick={() => updateLiquidityOperation(index, "type", "add")}
                             >
@@ -1183,8 +1190,8 @@ const LiquidityPoolSimulator = () => {
                             <Button
                               className={`flex-1 rounded-none ${
                                 liquidityOp.type === "remove"
-                                  ? "bg-teal-600 hover:bg-teal-700 text-white"
-                                  : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50"
+                                  ? "bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-700 dark:hover:bg-teal-600"
+                                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                               }`}
                               onClick={() => updateLiquidityOperation(index, "type", "remove")}
                             >
@@ -1265,7 +1272,7 @@ const LiquidityPoolSimulator = () => {
                     <Button
                       variant="outline"
                       onClick={addLiquidityOperation}
-                      className="flex-1 border-teal-200 text-teal-700 dark:text-teal-300 hover:bg-teal-50"
+                      className="flex-1 border-teal-200 text-teal-700 hover:bg-teal-50 dark:border-teal-800 dark:text-teal-300 dark:hover:bg-teal-900/30"
                     >
                       <Plus className="mr-2 h-4 w-4" /> Add Liquidity Operation
                     </Button>
@@ -1275,13 +1282,13 @@ const LiquidityPoolSimulator = () => {
                         const results = executeLiquidityOperations()
                         const validResults = results.filter((r) => r.token1Amount && r.token1Amount > 0)
                         if (validResults.length > 0) {
-                          setFeedbackMessage({ 
-                            type: 'success', 
-                            text: `Executed ${validResults.length} liquidity operations successfully!` 
-                          });
+                          setFeedbackMessage({
+                            type: "success",
+                            text: `Executed ${validResults.length} liquidity operations successfully!`,
+                          })
                         }
                       }}
-                      className="flex-1 bg-teal-600 hover:bg-teal-700"
+                      className="flex-1 bg-teal-600 hover:bg-teal-700 dark:bg-teal-700 dark:hover:bg-teal-600"
                       disabled={liquidityOperations.every(
                         (op) =>
                           (!op.token1Amount || Number(op.token1Amount) <= 0) &&
@@ -1311,7 +1318,7 @@ const LiquidityPoolSimulator = () => {
                   <div className="bg-white dark:bg-gray-700 p-4 rounded-full mb-4 shadow-sm">
                     <RefreshCw className="h-8 w-8 text-gray-400 dark:text-gray-300" />
                   </div>
-                  <p className="text-gray-500 dark:text-gray-400 text-center max-w-md">
+                  <p className="text-gray-500 dark:text-gray-400 text-center max-w-md text-sm">
                     No transactions yet. Execute trades or liquidity operations to see your transaction history here.
                   </p>
                 </div>
