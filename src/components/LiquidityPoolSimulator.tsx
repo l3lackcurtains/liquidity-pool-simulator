@@ -461,11 +461,11 @@ const LiquidityPoolSimulator = () => {
   return (
     <div className="w-full max-w-7xl mx-auto">
       <Card className="w-full border-0 shadow-lg overflow-hidden bg-white dark:bg-gray-900 rounded-xl">
-        <CardHeader className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white p-4 rounded-t-xl">
+        <CardHeader className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white p-3 rounded-t-xl">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="text-xl font-bold">Liquidity Pool Simulator</CardTitle>
-              <p className="text-teal-100 text-sm mt-0.5">Automated Market Maker (AMM) Simulation</p>
+              <CardTitle className="text-lg font-bold">Liquidity Pool Simulator</CardTitle>
+              <p className="text-xs text-teal-100 mt-0.5">Automated Market Maker (AMM) Simulation</p>
             </div>
             <div className="flex items-center space-x-2">
               <ThemeToggle />
@@ -483,15 +483,15 @@ const LiquidityPoolSimulator = () => {
 
         <CardContent className="p-0">
           {/* Current Status Display */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3">
             {/* Current Price Card */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
-              <div className="px-4 py-2">
-                <h3 className="font-medium text-gray-800 dark:text-gray-200">Current Price</h3>
+              <div className="px-3 py-2">
+                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">Current Price</h3>
               </div>
               <div className="p-3">
                 <div className="flex items-baseline">
-                  <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                  <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
                     ${token2PriceUSD.toFixed(6)}
                   </span>
                   <Badge
@@ -510,20 +510,20 @@ const LiquidityPoolSimulator = () => {
 
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-500 dark:text-gray-400">Exchange Rate</span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Exchange Rate</span>
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
                       1 {pool.token1Symbol} = {currentPrice.toFixed(2)} {pool.token2Symbol}
                     </span>
                   </div>
                   <div className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-700">
-                    <span className="text-gray-500 dark:text-gray-400">Market Cap</span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Market Cap</span>
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
                       ${(marketCap / 1000000).toFixed(2)}M
                     </span>
                   </div>
                   <div className="flex justify-between items-center py-1">
-                    <span className="text-gray-500 dark:text-gray-400">USD Value</span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">USD Value</span>
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
                       1 {pool.token2Symbol} = ${token2PriceUSD.toFixed(6)}
                     </span>
                   </div>
@@ -533,32 +533,32 @@ const LiquidityPoolSimulator = () => {
 
             {/* Pool Reserves Card */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
-              <div className="px-4 py-2">
-                <h3 className="font-medium text-gray-800 dark:text-gray-200">Pool Reserves</h3>
+              <div className="px-3 py-2">
+                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">Pool Reserves</h3>
               </div>
               <div className="p-3">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-gray-500 dark:text-gray-400">{pool.token1Symbol}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{pool.token1Symbol}</span>
                       <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">Base</span>
                     </div>
-                    <div className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                    <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                       {pool.token1Reserve.toFixed(4)}
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       Value: ${(pool.token1Reserve * pool.token1Price).toLocaleString()}
                     </div>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-gray-500 dark:text-gray-400">{pool.token2Symbol}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{pool.token2Symbol}</span>
                       <span className="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-full">Token</span>
                     </div>
-                    <div className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                    <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                       {(pool.token2Reserve / 1000000).toFixed(2)}M
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       Value: ${((pool.token2Reserve * token2PriceUSD) / 1000000).toFixed(2)}M
                     </div>
                   </div>
@@ -566,8 +566,8 @@ const LiquidityPoolSimulator = () => {
 
                 <div className="mt-4 pt-2 border-t border-gray-100 dark:border-gray-700">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-500 dark:text-gray-400">Constant K</span>
-                    <span className="font-medium text-indigo-600 dark:text-indigo-400">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Constant K</span>
+                    <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
                       {(getK() / 1000000).toFixed(2)}M
                     </span>
                   </div>
@@ -577,28 +577,28 @@ const LiquidityPoolSimulator = () => {
 
             {/* Market Reference Card */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
-              <div className="px-4 py-2">
-                <h3 className="text-gray-800 dark:text-gray-200 font-medium">Market Reference</h3>
+              <div className="px-3 py-2">
+                <h3 className="text-sm text-gray-800 dark:text-gray-200 font-medium">Market Reference</h3>
               </div>
               <div className="p-3">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
-                    <div className="text-gray-500 dark:text-gray-400 mb-1">ETH Price</div>
-                    <div className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">ETH Price</div>
+                    <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                       ${pool.token1Price.toFixed(2)}
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">Market Rate</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Market Rate</div>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
-                    <div className="text-gray-500 dark:text-gray-400 mb-1">Slippage</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Slippage</div>
                     <div
-                      className={`text-xl font-semibold ${
+                      className={`text-lg font-semibold ${
                         Math.abs(slippagePercentage) > 5 ? "text-amber-600" : "text-emerald-600"
                       }`}
                     >
                       {slippagePercentage.toFixed(2)}%
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {Math.abs(slippagePercentage) > 5 ? "High" : "Low"} Impact
                     </div>
                   </div>
@@ -606,7 +606,7 @@ const LiquidityPoolSimulator = () => {
 
                 <div className="mt-4 pt-2 border-t border-gray-100 dark:border-gray-700">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-500 dark:text-gray-400">Pool Liquidity</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Pool Liquidity</span>
                     <div className="flex items-center">
                       <div className="w-24 h-2 bg-gray-200 dark:bg-gray-700 rounded-full mr-2">
                         <div
@@ -614,7 +614,7 @@ const LiquidityPoolSimulator = () => {
                           style={{ width: `${Math.min((pool.token2Reserve / pool.token2TotalSupply) * 100, 100)}%` }}
                         ></div>
                       </div>
-                      <span className="font-medium text-gray-800 dark:text-gray-200">
+                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
                         {((pool.token2Reserve / pool.token2TotalSupply) * 100).toFixed(2)}%
                       </span>
                     </div>
@@ -625,48 +625,106 @@ const LiquidityPoolSimulator = () => {
           </div>
 
           {/* Price Chart */}
-          <div className="p-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="p-3 border-t border-gray-100 dark:border-gray-700">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
-              <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 flex justify-between items-center border-b border-gray-200 dark:border-gray-600">
+              <div className="px-3 py-2 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 flex justify-between items-center border-b border-gray-200 dark:border-gray-600">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                  <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                     {pool.token2Symbol} Price Chart
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Real-time price tracking in USD</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Real-time price tracking in USD</p>
                 </div>
                 <div className="flex space-x-2">
-                  <Badge className="bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border-0 px-3 py-1">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></div>
+                  <Badge className="bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border-0 px-2 py-0.5 text-xs">
+                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1 animate-pulse"></div>
                     Live
                   </Badge>
-                  <Badge className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 border-0 px-3 py-1">
+                  <Badge className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 border-0 px-2 py-0.5 text-xs">
                     {priceHistory.length} data points
                   </Badge>
                 </div>
               </div>
 
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Current Price</div>
-                    <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                      ${token2PriceUSD.toFixed(6)}
-                    </div>
-                    <div className={`text-sm font-medium ${priceChange >= 0 ? "text-emerald-600" : "text-red-600"}`}>
-                      {priceChange >= 0 ? "+" : ""}
-                      {priceChange.toFixed(2)}% change
+              <div className="p-3">
+                <div className="grid grid-cols-5 gap-2 mb-3">
+                  <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 p-2 rounded-lg border border-teal-200 dark:border-teal-800">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-medium text-teal-700 dark:text-teal-300">Current Price</div>
+                        <div className="text-sm font-bold text-teal-800 dark:text-teal-200">
+                          ${token2PriceUSD.toFixed(6)}
+                        </div>
+                        <div
+                          className={`text-xs font-medium ${priceChange >= 0 ? "text-emerald-600" : "text-red-600"}`}
+                        >
+                          {priceChange >= 0 ? "+" : ""}
+                          {priceChange.toFixed(2)}%
+                        </div>
+                      </div>
+                      <div className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse"></div>
                     </div>
                   </div>
-                  <div className="text-right bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Reference Rate</div>
-                    <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                      1 ETH = ${pool.token1Price}
+
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/20 dark:to-gray-700/20 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Reference Rate</div>
+                        <div className="text-sm font-bold text-gray-800 dark:text-gray-200">${pool.token1Price}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">ETH Market</div>
+                      </div>
+                      <div className="w-1 h-1 bg-gray-600 dark:bg-gray-300 rounded-full"></div>
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Market price</div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-2 rounded-lg border border-red-200 dark:border-red-800">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-medium text-red-700 dark:text-red-300">Min</div>
+                        <div className="text-sm font-bold text-red-800 dark:text-red-200">
+                          $
+                          {priceHistory.length > 0
+                            ? Math.min(...priceHistory.map((item) => item.priceUSD)).toFixed(6)
+                            : "0.000000"}
+                        </div>
+                      </div>
+                      <ArrowDownRight className="w-3 h-3 text-red-600 dark:text-red-300" />
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 p-2 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300">Max</div>
+                        <div className="text-sm font-bold text-emerald-800 dark:text-emerald-200">
+                          $
+                          {priceHistory.length > 0
+                            ? Math.max(...priceHistory.map((item) => item.priceUSD)).toFixed(6)
+                            : "0.000000"}
+                        </div>
+                      </div>
+                      <ArrowUpRight className="w-3 h-3 text-emerald-600 dark:text-emerald-300" />
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-2 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-medium text-blue-700 dark:text-blue-300">Avg</div>
+                        <div className="text-sm font-bold text-blue-800 dark:text-blue-200">
+                          $
+                          {priceHistory.length > 0
+                            ? (
+                                priceHistory.reduce((sum, item) => sum + item.priceUSD, 0) / priceHistory.length
+                              ).toFixed(6)
+                            : "0.000000"}
+                        </div>
+                      </div>
+                      <div className="w-1 h-1 bg-blue-600 dark:bg-blue-300 rounded-full"></div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="w-full h-80 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                <div className="w-full h-80 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl p-3 border border-gray-200 dark:border-gray-700">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={priceHistory} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
                       <defs>
@@ -679,14 +737,14 @@ const LiquidityPoolSimulator = () => {
                       <XAxis
                         dataKey="timestamp"
                         stroke={darkMode ? "#9ca3af" : "#6b7280"}
-                        fontSize={12}
+                        fontSize={11}
                         tickLine={false}
                         axisLine={{ stroke: darkMode ? "#4b5563" : "#d1d5db" }}
                       />
                       <YAxis
                         tickFormatter={(value) => `$${value.toFixed(6)}`}
                         stroke={darkMode ? "#9ca3af" : "#6b7280"}
-                        fontSize={12}
+                        fontSize={11}
                         tickLine={false}
                         axisLine={{ stroke: darkMode ? "#4b5563" : "#d1d5db" }}
                         domain={["dataMin", "dataMax"]}
@@ -699,8 +757,9 @@ const LiquidityPoolSimulator = () => {
                           borderRadius: "12px",
                           boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
                           border: `1px solid ${darkMode ? "#4b5563" : "#e5e7eb"}`,
-                          padding: "12px 16px",
+                          padding: "8px 12px",
                           color: darkMode ? "#f3f4f6" : "#1f2937",
+                          fontSize: "12px",
                         }}
                       />
                       <Area
@@ -716,9 +775,9 @@ const LiquidityPoolSimulator = () => {
                         dataKey="priceUSD"
                         stroke="#10b981"
                         strokeWidth={3}
-                        dot={{ r: 4, fill: "#10b981", strokeWidth: 2, stroke: darkMode ? "#374151" : "white" }}
+                        dot={{ r: 3, fill: "#10b981", strokeWidth: 2, stroke: darkMode ? "#374151" : "white" }}
                         activeDot={{
-                          r: 7,
+                          r: 6,
                           fill: "#059669",
                           strokeWidth: 0,
                           shadow: "0 0 10px rgba(16, 185, 129, 0.5)",
@@ -727,67 +786,12 @@ const LiquidityPoolSimulator = () => {
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-
-                <div className="grid grid-cols-3 gap-4 mt-6">
-                  <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-sm font-medium text-red-700 dark:text-red-300">Minimum Price</div>
-                        <div className="text-lg font-bold text-red-800 dark:text-red-200">
-                          $
-                          {priceHistory.length > 0
-                            ? Math.min(...priceHistory.map((item) => item.priceUSD)).toFixed(6)
-                            : "0.000000"}
-                        </div>
-                      </div>
-                      <div className="w-10 h-10 bg-red-200 dark:bg-red-800 rounded-full flex items-center justify-center">
-                        <ArrowDownRight className="w-5 h-5 text-red-600 dark:text-red-300" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 p-4 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Maximum Price</div>
-                        <div className="text-lg font-bold text-emerald-800 dark:text-emerald-200">
-                          $
-                          {priceHistory.length > 0
-                            ? Math.max(...priceHistory.map((item) => item.priceUSD)).toFixed(6)
-                            : "0.000000"}
-                        </div>
-                      </div>
-                      <div className="w-10 h-10 bg-emerald-200 dark:bg-emerald-800 rounded-full flex items-center justify-center">
-                        <ArrowUpRight className="w-5 h-5 text-emerald-600 dark:text-emerald-300" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-sm font-medium text-blue-700 dark:text-blue-300">Average Price</div>
-                        <div className="text-lg font-bold text-blue-800 dark:text-blue-200">
-                          $
-                          {priceHistory.length > 0
-                            ? (
-                                priceHistory.reduce((sum, item) => sum + item.priceUSD, 0) / priceHistory.length
-                              ).toFixed(6)
-                            : "0.000000"}
-                        </div>
-                      </div>
-                      <div className="w-10 h-10 bg-blue-200 dark:bg-blue-800 rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-blue-600 dark:bg-blue-300 rounded-full"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
 
           {/* Tabs for Pool Configuration, Trading, and Liquidity */}
-          <div className="p-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="p-3 border-t border-gray-100 dark:border-gray-700">
             <Tabs defaultValue="config" className="w-full">
               <TabsList className="grid grid-cols-3 mb-6">
                 <TabsTrigger value="config">Pool Configuration</TabsTrigger>
@@ -828,7 +832,7 @@ const LiquidityPoolSimulator = () => {
                         disabled={inputsLocked}
                         className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Total token supply in circulation</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Total token supply in circulation</p>
                     </div>
 
                     <div>
@@ -840,7 +844,7 @@ const LiquidityPoolSimulator = () => {
                         disabled={inputsLocked}
                         className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Current market price of ETH in USD
                       </p>
                     </div>
@@ -858,7 +862,7 @@ const LiquidityPoolSimulator = () => {
                         disabled={inputsLocked}
                         className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Amount of ETH locked in the pool</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Amount of ETH locked in the pool</p>
                     </div>
 
                     <div>
@@ -877,7 +881,7 @@ const LiquidityPoolSimulator = () => {
                         disabled={inputsLocked}
                         className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
-                      <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <span>
                           {((pool.token2Reserve / pool.token2TotalSupply) * 100).toFixed(2)}% of total supply in pool
                         </span>
@@ -888,7 +892,7 @@ const LiquidityPoolSimulator = () => {
                 </div>
                 <Button
                   onClick={simulatePoolConfig}
-                  className="w-full mt-6 bg-teal-600 hover:bg-teal-700 text-white py-6 text-lg font-medium"
+                  className="w-full mt-6 bg-teal-600 hover:bg-teal-700 text-white py-5 text-sm font-medium"
                   disabled={inputsLocked}
                 >
                   <Play className="mr-2 h-5 w-5" /> Simulate with Current Configuration
@@ -901,10 +905,10 @@ const LiquidityPoolSimulator = () => {
                   {batchTrades.map((batchTrade, index) => (
                     <div
                       key={index}
-                      className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm"
+                      className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm"
                     >
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100">Trade #{index + 1}</h4>
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Trade #{index + 1}</h4>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -965,8 +969,8 @@ const LiquidityPoolSimulator = () => {
                         <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">Expected Output</div>
-                              <div className="font-medium text-gray-800 dark:text-gray-200">
+                              <div className="text-xs text-gray-500 dark:text-gray-400">Expected Output</div>
+                              <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
                                 {calculateOutputAmount(
                                   batchTrade.amount,
                                   batchTrade.type === "buy" ? pool.token1Reserve : pool.token2Reserve,
@@ -976,8 +980,8 @@ const LiquidityPoolSimulator = () => {
                               </div>
                             </div>
                             <div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">Price Impact</div>
-                              <div className="font-medium text-gray-800 dark:text-gray-200">
+                              <div className="text-xs text-gray-500 dark:text-gray-400">Price Impact</div>
+                              <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
                                 {calculatePriceImpact(
                                   batchTrade.amount,
                                   batchTrade.type === "buy" ? pool.token1Reserve : pool.token2Reserve,
@@ -989,8 +993,8 @@ const LiquidityPoolSimulator = () => {
                           </div>
 
                           <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">Effective Rate</div>
-                            <div className="font-medium text-teal-700 dark:text-teal-300">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Effective Rate</div>
+                            <div className="text-sm font-medium text-teal-700 dark:text-teal-300">
                               1 ETH ={" "}
                               {batchTrade.type === "buy"
                                 ? (
@@ -1048,10 +1052,10 @@ const LiquidityPoolSimulator = () => {
                   {liquidityOperations.map((liquidityOp, index) => (
                     <div
                       key={index}
-                      className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm"
+                      className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm"
                     >
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           Liquidity Operation #{index + 1}
                         </h4>
                         <Button
@@ -1134,15 +1138,15 @@ const LiquidityPoolSimulator = () => {
                         <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">Ratio</div>
-                              <div className="font-medium text-gray-800 dark:text-gray-200">
+                              <div className="text-xs text-gray-500 dark:text-gray-400">Ratio</div>
+                              <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
                                 1 {pool.token1Symbol} ={" "}
                                 {(liquidityOp.token2Amount / liquidityOp.token1Amount).toFixed(4)} {pool.token2Symbol}
                               </div>
                             </div>
                             <div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">Current Pool Ratio</div>
-                              <div className="font-medium text-gray-800 dark:text-gray-200">
+                              <div className="text-xs text-gray-500 dark:text-gray-400">Current Pool Ratio</div>
+                              <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
                                 1 {pool.token1Symbol} = {(pool.token2Reserve / pool.token1Reserve).toFixed(4)}{" "}
                                 {pool.token2Symbol}
                               </div>
@@ -1193,10 +1197,10 @@ const LiquidityPoolSimulator = () => {
           </div>
 
           {/* Transaction History */}
-          <div className="p-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="p-3 border-t border-gray-100 dark:border-gray-700">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
               <div className="px-6 py-4 flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Transaction History</h3>
+                <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Transaction History</h3>
                 <Badge className="bg-white/20 text-white border-0">{transactions.length} transactions</Badge>
               </div>
 
@@ -1214,11 +1218,11 @@ const LiquidityPoolSimulator = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-sm">Time</th>
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-sm">Type</th>
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-sm">Input</th>
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-sm">Output</th>
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-sm">Rate</th>
+                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Time</th>
+                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Type</th>
+                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Input</th>
+                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Output</th>
+                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Rate</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -1260,7 +1264,7 @@ const LiquidityPoolSimulator = () => {
                                   <div className="font-medium text-gray-800 dark:text-gray-200">
                                     {tx.token1Amount?.toFixed(4)} {tx.inputToken}
                                   </div>
-                                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400">
                                     + {tx.token2Amount?.toFixed(4)} {tx.outputToken}
                                   </div>
                                 </div>
