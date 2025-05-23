@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -881,7 +882,6 @@ const LiquidityPoolSimulator = () => {
                           r: 6,
                           fill: darkMode ? "#14b8a6" : "#059669",
                           strokeWidth: 0,
-                          shadow: `0 0 10px ${darkMode ? "rgba(20, 184, 166, 0.5)" : "rgba(16, 185, 129, 0.5)"}`,
                         }}
                       />
                     </LineChart>
