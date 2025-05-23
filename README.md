@@ -2,10 +2,7 @@
 
 An interactive web application that simulates Automated Market Maker (AMM) liquidity pools, allowing users to experiment with trading and liquidity provision in a risk-free environment.
 
-<video width="100%" controls>
-  <source src="./resources/demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[Watch demo video](./resources/demo.mp4)
 
 ## Overview
 
