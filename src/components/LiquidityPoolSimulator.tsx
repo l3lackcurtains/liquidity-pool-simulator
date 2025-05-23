@@ -455,6 +455,9 @@ const LiquidityPoolSimulator = () => {
       ? ((priceHistory[priceHistory.length - 1].priceUSD - priceHistory[0].priceUSD) / priceHistory[0].priceUSD) * 100
       : 0
 
+  const { theme: currentTheme } = useTheme()
+  const darkMode = currentTheme === "dark"
+
   return (
     <div className="w-full max-w-7xl mx-auto">
       <Card className="w-full border-0 shadow-lg overflow-hidden bg-white dark:bg-gray-900 rounded-xl">
@@ -624,37 +627,46 @@ const LiquidityPoolSimulator = () => {
           {/* Price Chart */}
           <div className="p-4 border-t border-gray-100 dark:border-gray-700">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
-              <div className="px-6 py-4 flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                  {pool.token2Symbol} Price Chart (USD)
-                </h3>
+              <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 flex justify-between items-center border-b border-gray-200 dark:border-gray-600">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                    {pool.token2Symbol} Price Chart
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Real-time price tracking in USD</p>
+                </div>
                 <div className="flex space-x-2">
-                  <Badge className="bg-white/20 text-white border-0">Live</Badge>
-                  <Badge className="bg-white/20 text-white border-0">{priceHistory.length} data points</Badge>
+                  <Badge className="bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border-0 px-3 py-1">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></div>
+                    Live
+                  </Badge>
+                  <Badge className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 border-0 px-3 py-1">
+                    {priceHistory.length} data points
+                  </Badge>
                 </div>
               </div>
 
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Current Price</div>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Current Price</div>
+                    <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                       ${token2PriceUSD.toFixed(6)}
-                      <span
-                        className={`ml-2 text-sm font-normal ${priceChange >= 0 ? "text-emerald-600" : "text-red-600"}`}
-                      >
-                        {priceChange >= 0 ? "+" : ""}
-                        {priceChange.toFixed(2)}%
-                      </span>
+                    </div>
+                    <div className={`text-sm font-medium ${priceChange >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                      {priceChange >= 0 ? "+" : ""}
+                      {priceChange.toFixed(2)}% change
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Reference</div>
-                    <div className="text-gray-700 dark:text-gray-300">1 ETH = ${pool.token1Price}</div>
+                  <div className="text-right bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Reference Rate</div>
+                    <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                      1 ETH = ${pool.token1Price}
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Market price</div>
                   </div>
                 </div>
 
-                <div className="w-full h-72 bg-white dark:bg-gray-800 rounded-xl">
+                <div className="w-full h-80 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={priceHistory} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
                       <defs>
@@ -663,38 +675,39 @@ const LiquidityPoolSimulator = () => {
                           <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? "#374151" : "#e5e7eb"} vertical={false} />
                       <XAxis
                         dataKey="timestamp"
-                        stroke="#9ca3af"
+                        stroke={darkMode ? "#9ca3af" : "#6b7280"}
                         fontSize={12}
                         tickLine={false}
-                        axisLine={{ stroke: "#e5e7eb" }}
+                        axisLine={{ stroke: darkMode ? "#4b5563" : "#d1d5db" }}
                       />
                       <YAxis
                         tickFormatter={(value) => `$${value.toFixed(6)}`}
-                        stroke="#9ca3af"
+                        stroke={darkMode ? "#9ca3af" : "#6b7280"}
                         fontSize={12}
                         tickLine={false}
-                        axisLine={{ stroke: "#e5e7eb" }}
+                        axisLine={{ stroke: darkMode ? "#4b5563" : "#d1d5db" }}
                         domain={["dataMin", "dataMax"]}
                       />
                       <Tooltip
                         formatter={(value: number) => [`$${value.toFixed(6)}`, `${pool.token2Symbol} Price`]}
                         labelFormatter={(label) => `Time: ${label}`}
                         contentStyle={{
-                          backgroundColor: "white",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                          border: "none",
-                          padding: "10px 14px",
+                          backgroundColor: darkMode ? "#374151" : "white",
+                          borderRadius: "12px",
+                          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
+                          border: `1px solid ${darkMode ? "#4b5563" : "#e5e7eb"}`,
+                          padding: "12px 16px",
+                          color: darkMode ? "#f3f4f6" : "#1f2937",
                         }}
                       />
                       <Area
                         type="monotone"
                         dataKey="priceUSD"
                         stroke="#10b981"
-                        strokeWidth={2}
+                        strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorPrice)"
                       />
@@ -702,32 +715,71 @@ const LiquidityPoolSimulator = () => {
                         type="monotone"
                         dataKey="priceUSD"
                         stroke="#10b981"
-                        strokeWidth={2}
-                        dot={{ r: 3, fill: "#10b981", strokeWidth: 2, stroke: "white" }}
-                        activeDot={{ r: 6, fill: "#059669", strokeWidth: 0 }}
+                        strokeWidth={3}
+                        dot={{ r: 4, fill: "#10b981", strokeWidth: 2, stroke: darkMode ? "#374151" : "white" }}
+                        activeDot={{
+                          r: 7,
+                          fill: "#059669",
+                          strokeWidth: 0,
+                          shadow: "0 0 10px rgba(16, 185, 129, 0.5)",
+                        }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
 
-                <div className="flex justify-between items-center mt-4 text-sm text-gray-500 dark:text-gray-400">
-                  <div>
-                    Min: $
-                    {priceHistory.length > 0
-                      ? Math.min(...priceHistory.map((item) => item.priceUSD)).toFixed(6)
-                      : "0.000000"}
+                <div className="grid grid-cols-3 gap-4 mt-6">
+                  <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-red-700 dark:text-red-300">Minimum Price</div>
+                        <div className="text-lg font-bold text-red-800 dark:text-red-200">
+                          $
+                          {priceHistory.length > 0
+                            ? Math.min(...priceHistory.map((item) => item.priceUSD)).toFixed(6)
+                            : "0.000000"}
+                        </div>
+                      </div>
+                      <div className="w-10 h-10 bg-red-200 dark:bg-red-800 rounded-full flex items-center justify-center">
+                        <ArrowDownRight className="w-5 h-5 text-red-600 dark:text-red-300" />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    Max: $
-                    {priceHistory.length > 0
-                      ? Math.max(...priceHistory.map((item) => item.priceUSD)).toFixed(6)
-                      : "0.000000"}
+
+                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 p-4 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Maximum Price</div>
+                        <div className="text-lg font-bold text-emerald-800 dark:text-emerald-200">
+                          $
+                          {priceHistory.length > 0
+                            ? Math.max(...priceHistory.map((item) => item.priceUSD)).toFixed(6)
+                            : "0.000000"}
+                        </div>
+                      </div>
+                      <div className="w-10 h-10 bg-emerald-200 dark:bg-emerald-800 rounded-full flex items-center justify-center">
+                        <ArrowUpRight className="w-5 h-5 text-emerald-600 dark:text-emerald-300" />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    Avg: $
-                    {priceHistory.length > 0
-                      ? (priceHistory.reduce((sum, item) => sum + item.priceUSD, 0) / priceHistory.length).toFixed(6)
-                      : "0.000000"}
+
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-blue-700 dark:text-blue-300">Average Price</div>
+                        <div className="text-lg font-bold text-blue-800 dark:text-blue-200">
+                          $
+                          {priceHistory.length > 0
+                            ? (
+                                priceHistory.reduce((sum, item) => sum + item.priceUSD, 0) / priceHistory.length
+                              ).toFixed(6)
+                            : "0.000000"}
+                        </div>
+                      </div>
+                      <div className="w-10 h-10 bg-blue-200 dark:bg-blue-800 rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-blue-600 dark:bg-blue-300 rounded-full"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -753,7 +805,7 @@ const LiquidityPoolSimulator = () => {
                         <Input
                           value={pool.token1Symbol}
                           disabled
-                          className="bg-gray-50 dark:bg-gray-700 dark:text-gray-300 mt-1"
+                          className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 mt-1"
                         />
                       </div>
                       <div>
@@ -762,7 +814,7 @@ const LiquidityPoolSimulator = () => {
                           value={pool.token2Symbol}
                           onChange={(e) => setPool((prev) => ({ ...prev, token2Symbol: e.target.value }))}
                           disabled={inputsLocked}
-                          className="mt-1"
+                          className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                         />
                       </div>
                     </div>
@@ -774,7 +826,7 @@ const LiquidityPoolSimulator = () => {
                         value={pool.token2TotalSupply}
                         onChange={(e) => setPool((prev) => ({ ...prev, token2TotalSupply: Number(e.target.value) }))}
                         disabled={inputsLocked}
-                        className="mt-1"
+                        className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Total token supply in circulation</p>
                     </div>
@@ -786,7 +838,7 @@ const LiquidityPoolSimulator = () => {
                         value={pool.token1Price}
                         onChange={(e) => setPool((prev) => ({ ...prev, token1Price: Number(e.target.value) }))}
                         disabled={inputsLocked}
-                        className="mt-1"
+                        className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Current market price of ETH in USD
@@ -804,7 +856,7 @@ const LiquidityPoolSimulator = () => {
                         value={pool.token1Reserve}
                         onChange={(e) => setPool((prev) => ({ ...prev, token1Reserve: Number(e.target.value) }))}
                         disabled={inputsLocked}
-                        className="mt-1"
+                        className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Amount of ETH locked in the pool</p>
                     </div>
@@ -823,7 +875,7 @@ const LiquidityPoolSimulator = () => {
                           setPool((prev) => ({ ...prev, token2Reserve: newReserve }))
                         }}
                         disabled={inputsLocked}
-                        className="mt-1"
+                        className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       />
                       <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
                         <span>
@@ -904,7 +956,7 @@ const LiquidityPoolSimulator = () => {
                             value={batchTrade.amount}
                             onChange={(e) => updateBatchTrade(index, "amount", e.target.value)}
                             placeholder="Enter amount"
-                            className="mt-1"
+                            className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                           />
                         </div>
                       </div>
@@ -1056,7 +1108,7 @@ const LiquidityPoolSimulator = () => {
                               updateLiquidityOperation(index, "token2Amount", proportionalToken2.toString())
                             }}
                             placeholder="Enter amount"
-                            className="mt-1"
+                            className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                           />
                         </div>
 
@@ -1073,7 +1125,7 @@ const LiquidityPoolSimulator = () => {
                               updateLiquidityOperation(index, "token1Amount", proportionalToken1.toString())
                             }}
                             placeholder="Enter amount"
-                            className="mt-1"
+                            className="mt-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                           />
                         </div>
                       </div>
