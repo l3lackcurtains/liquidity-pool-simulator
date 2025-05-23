@@ -2,11 +2,11 @@
 
 An interactive web application that simulates Automated Market Maker (AMM) liquidity pools, allowing users to experiment with trading and liquidity provision in a risk-free environment.
 
-[![Watch demo video](https://img.shields.io/badge/Watch-Demo_Video-blue)](./resources/demo.mp4)
+[![Watch demo video](https://img.shields.io/badge/Watch-Demo_Video-blue)](https://raw.githubusercontent.com/l3lackcurtains/liquidity-pool-simulator/refs/heads/main/resources/demo.mp4)
 
-| | |
+| Screenshot 1 | Screenshot 2 |
 |:---:|:---:|
-| ![Screenshot 1](./resources/screenshot1.png) | ![Screenshot 2](./resources/screenshot2.png) |
+| ![Screenshot 1](https://raw.githubusercontent.com/l3lackcurtains/liquidity-pool-simulator/refs/heads/main/resources/screenshot1.png) | ![Screenshot 2](https://raw.githubusercontent.com/l3lackcurtains/liquidity-pool-simulator/refs/heads/main/resources/screenshot2.png) |
 
 ## Overview
 
