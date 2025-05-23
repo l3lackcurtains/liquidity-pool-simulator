@@ -17,7 +17,8 @@ const ThemeToggle = () => {
     <Button
       variant="outline"
       size="sm"
-      className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+      className="bg-white/10 text-white border-white/20 hover:bg-white/30 hover:border-white/40 transition-colors duration-200 
+      dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:hover:text-white"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       {theme === "dark" ? (
@@ -121,6 +122,53 @@ const LiquidityPoolSimulator = () => {
   ])
   const [inputsLocked, setInputsLocked] = useState(false)
 
+  // Add state for feedback messages
+  const [feedbackMessage, setFeedbackMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
+
+  // Clear feedback after 3 seconds
+  useEffect(() => {
+    if (feedbackMessage) {
+      const timer = setTimeout(() => {
+        setFeedbackMessage(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [feedbackMessage]);
+
+  // Add useEffect to load data from localStorage on component mount
+  useEffect(() => {
+    const savedData = localStorage.getItem("liquidityPoolData")
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData)
+        setPool(parsedData.pool || pool)
+        setPriceHistory(parsedData.priceHistory || [])
+        setTransactions(parsedData.transactions || [])
+        setBatchTrades(parsedData.batchTrades || [{ type: "buy", amount: 0 }])
+        setLiquidityOperations(parsedData.liquidityOperations || [{ type: "add", token1Amount: 0, token2Amount: 0 }])
+        setInputsLocked(parsedData.inputsLocked || false)
+      } catch (error) {
+        console.error("Error loading saved data:", error)
+      }
+    }
+  }, [])
+
+  // Add useEffect to save data to localStorage when state changes
+  useEffect(() => {
+    const dataToSave = {
+      pool,
+      priceHistory,
+      transactions,
+      batchTrades,
+      liquidityOperations,
+      inputsLocked
+    }
+    localStorage.setItem("liquidityPoolData", JSON.stringify(dataToSave))
+  }, [pool, priceHistory, transactions, batchTrades, liquidityOperations, inputsLocked])
+
   // Calculate current price (token2 per token1)
   const getCurrentPrice = () => {
     return pool.token2Reserve / pool.token1Reserve
@@ -147,16 +195,26 @@ const LiquidityPoolSimulator = () => {
   useEffect(() => {
     const price = getCurrentPrice()
     const priceUSD = getToken2PriceUSD()
-    setPriceHistory((prev) =>
-      [
+    
+    // Only add new price point if there's a meaningful change
+    setPriceHistory((prev) => {
+      // Don't add duplicate entries if values haven't changed
+      if (prev.length > 0) {
+        const lastEntry = prev[prev.length - 1]
+        if (Math.abs(lastEntry.priceUSD - priceUSD) < 0.000001) {
+          return prev
+        }
+      }
+      
+      return [
         ...prev,
         {
           timestamp: new Date().toLocaleTimeString(),
           price: price,
           priceUSD: priceUSD,
         },
-      ].slice(-20),
-    ) // Keep more history for better chart
+      ].slice(-20) // Keep last 20 points for better visualization
+    })
   }, [pool.token1Reserve, pool.token2Reserve, pool.token1Price])
 
   const getK = () => pool.token1Reserve * pool.token2Reserve
@@ -184,21 +242,21 @@ const LiquidityPoolSimulator = () => {
 
   // Validation function for token2 amounts
   const validateToken2Amount = (amount: number, operation: "add" | "remove" | "sell") => {
-    const availableSupply = pool.token2TotalSupply - pool.token2Reserve
+    const availableSupply = pool.token2TotalSupply - pool.token2Reserve;
 
     if (operation === "add" && amount > availableSupply) {
-      return `Cannot add ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${availableSupply.toLocaleString()} available from total supply.`
+      return `Cannot add ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${availableSupply.toLocaleString()} available from total supply.`;
     }
 
     if (operation === "remove" && amount > pool.token2Reserve) {
-      return `Cannot remove ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${pool.token2Reserve.toLocaleString()} available in pool.`
+      return `Cannot remove ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${pool.token2Reserve.toLocaleString()} available in pool.`;
     }
 
     if (operation === "sell" && amount > availableSupply) {
-      return `Cannot sell ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${availableSupply.toLocaleString()} available from circulating supply.`
+      return `Cannot sell ${amount.toLocaleString()} ${pool.token2Symbol}. Only ${availableSupply.toLocaleString()} available from circulating supply.`;
     }
 
-    return null
+    return null;
   }
 
   const addBatchTrade = () => {
@@ -263,8 +321,8 @@ const LiquidityPoolSimulator = () => {
       if (batchTrade.type === "sell") {
         const validationError = validateToken2Amount(batchTrade.amount, "sell")
         if (validationError) {
-          alert(validationError)
-          return []
+          setFeedbackMessage({ type: 'error', text: validationError });
+          return [];
         }
       }
     }
@@ -315,6 +373,13 @@ const LiquidityPoolSimulator = () => {
     // Add transactions to history
     setTransactions((prev) => [...results, ...prev].slice(0, 10))
 
+    if (results.length > 0) {
+      setFeedbackMessage({ 
+        type: 'success', 
+        text: `Executed ${results.length} trades successfully!` 
+      });
+    }
+
     return results
   }
 
@@ -329,14 +394,14 @@ const LiquidityPoolSimulator = () => {
       if (liquidityOp.type === "add") {
         const validationError = validateToken2Amount(liquidityOp.token2Amount, "add")
         if (validationError) {
-          alert(validationError)
-          return []
+          setFeedbackMessage({ type: 'error', text: validationError });
+          return [];
         }
       } else {
         const validationError = validateToken2Amount(liquidityOp.token2Amount, "remove")
         if (validationError) {
-          alert(validationError)
-          return []
+          setFeedbackMessage({ type: 'error', text: validationError });
+          return [];
         }
       }
     }
@@ -375,16 +440,16 @@ const LiquidityPoolSimulator = () => {
           liquidityOp.token1Amount > currentPool.token1Reserve ||
           liquidityOp.token2Amount > currentPool.token2Reserve
         ) {
-          alert("Cannot remove more liquidity than available in pool")
-          return
+          setFeedbackMessage({ type: 'error', text: "Cannot remove more liquidity than available in pool" });
+          return;
         }
 
         const newToken1Reserve = currentPool.token1Reserve - liquidityOp.token1Amount
         const newToken2Reserve = currentPool.token2Reserve - liquidityOp.token2Amount
 
         if (newToken1Reserve <= 0 || newToken2Reserve <= 0) {
-          alert("Cannot remove all liquidity from pool")
-          return
+          setFeedbackMessage({ type: 'error', text: "Cannot remove all liquidity from pool" });
+          return;
         }
 
         const newTransaction: Transaction = {
@@ -414,19 +479,36 @@ const LiquidityPoolSimulator = () => {
     // Add transactions to history
     setTransactions((prev) => [...results, ...prev].slice(0, 20))
 
+    if (results.length > 0) {
+      setFeedbackMessage({ 
+        type: 'success', 
+        text: `Executed ${results.length} liquidity operations successfully!` 
+      });
+    }
+
     return results
   }
 
   const resetPool = () => {
-    const initialToken2Reserve = 10_000_000 // Reset to original amount
-    setPool((prev) => ({
-      ...prev,
-      token1Reserve: 3.8,
-      token2Reserve: initialToken2Reserve,
-    }))
-    setPriceHistory([])
-    setTransactions([])
-    setInputsLocked(false) // Unlock inputs
+    if (window.confirm("Are you sure you want to reset the pool? All your data will be lost.")) {
+      const initialToken2Reserve = 10_000_000;
+      setPool((prev) => ({
+        ...prev,
+        token1Reserve: 3.8,
+        token2Reserve: initialToken2Reserve,
+      }));
+      setPriceHistory([]);
+      setTransactions([]);
+      setInputsLocked(false);
+      
+      // Clear saved data from localStorage
+      localStorage.removeItem("liquidityPoolData");
+      
+      setFeedbackMessage({ 
+        type: 'success', 
+        text: 'Pool has been reset successfully' 
+      });
+    }
   }
 
   const simulatePoolConfig = () => {
@@ -460,32 +542,41 @@ const LiquidityPoolSimulator = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto">
-      <Card className="w-full border-0 shadow-lg overflow-hidden bg-white dark:bg-gray-900 rounded-xl">
-        <CardHeader className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white p-3 rounded-t-xl">
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle className="text-lg font-bold">Liquidity Pool Simulator</CardTitle>
-              <p className="text-xs text-teal-100 mt-0.5">Automated Market Maker (AMM) Simulation</p>
-            </div>
-            <div className="flex items-center space-x-2">
-              <ThemeToggle />
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-                onClick={resetPool}
-              >
-                <RefreshCw className="mr-1 h-4 w-4" /> Reset
-              </Button>
-            </div>
+      <Card className="w-full border-0 shadow-none bg-white dark:bg-gray-900 rounded-xl">
+        <CardHeader className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white p-6 rounded-t-xl flex flex-row items-center justify-between w-full">
+          <div className="flex flex-col">
+            <CardTitle className="text-2xl font-bold">Liquidity Pool Simulator</CardTitle>
+            <p className="text-sm text-teal-100">Automated Market Maker (AMM) Simulation</p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <ThemeToggle />
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-white/10 text-white border-white/20 hover:bg-white/30 hover:border-white/40 transition-colors duration-200 
+              dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:hover:text-white"
+              onClick={resetPool}
+            >
+              <RefreshCw className="mr-1 h-4 w-4" /> Reset
+            </Button>
           </div>
         </CardHeader>
+
+        {feedbackMessage && (
+          <div className={`px-4 py-2 mb-2 text-sm rounded-md ${
+            feedbackMessage.type === 'success' 
+              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+          }`}>
+            {feedbackMessage.text}
+          </div>
+        )}
 
         <CardContent className="p-0">
           {/* Current Status Display */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3">
             {/* Current Price Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-none overflow-hidden border border-gray-100 dark:border-gray-700">
               <div className="px-3 py-2">
                 <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">Current Price</h3>
               </div>
@@ -532,7 +623,7 @@ const LiquidityPoolSimulator = () => {
             </div>
 
             {/* Pool Reserves Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-none overflow-hidden border border-gray-100 dark:border-gray-700">
               <div className="px-3 py-2">
                 <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">Pool Reserves</h3>
               </div>
@@ -576,7 +667,7 @@ const LiquidityPoolSimulator = () => {
             </div>
 
             {/* Market Reference Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-none overflow-hidden border border-gray-100 dark:border-gray-700">
               <div className="px-3 py-2">
                 <h3 className="text-sm text-gray-800 dark:text-gray-200 font-medium">Market Reference</h3>
               </div>
@@ -626,7 +717,7 @@ const LiquidityPoolSimulator = () => {
 
           {/* Price Chart */}
           <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-none overflow-hidden border border-gray-100 dark:border-gray-700">
               <div className="px-3 py-2 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 flex justify-between items-center border-b border-gray-200 dark:border-gray-600">
                 <div>
                   <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
@@ -646,8 +737,8 @@ const LiquidityPoolSimulator = () => {
               </div>
 
               <div className="p-3">
-                <div className="grid grid-cols-5 gap-2 mb-3">
-                  <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 p-2 rounded-lg border border-teal-200 dark:border-teal-800">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 mb-3">
+                  <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 p-2 rounded-lg border border-teal-200 dark:border-teal-800 shadow-none">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-xs font-medium text-teal-700 dark:text-teal-300">Current Price</div>
@@ -665,7 +756,7 @@ const LiquidityPoolSimulator = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/20 dark:to-gray-700/20 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/20 dark:to-gray-700/20 p-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-none">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Reference Rate</div>
@@ -676,7 +767,7 @@ const LiquidityPoolSimulator = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-2 rounded-lg border border-red-200 dark:border-red-800">
+                  <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-2 rounded-lg border border-red-200 dark:border-red-800 shadow-none">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-xs font-medium text-red-700 dark:text-red-300">Min</div>
@@ -691,7 +782,7 @@ const LiquidityPoolSimulator = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 p-2 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 p-2 rounded-lg border border-emerald-200 dark:border-emerald-800 shadow-none">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300">Max</div>
@@ -706,7 +797,7 @@ const LiquidityPoolSimulator = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-2 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-2 rounded-lg border border-blue-200 dark:border-blue-800 shadow-none">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-xs font-medium text-blue-700 dark:text-blue-300">Avg</div>
@@ -724,7 +815,7 @@ const LiquidityPoolSimulator = () => {
                   </div>
                 </div>
 
-                <div className="w-full h-80 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl p-3 border border-gray-200 dark:border-gray-700">
+                <div className="w-full h-80 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl p-3 border border-gray-200 dark:border-gray-700 shadow-none">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={priceHistory} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
                       <defs>
@@ -740,6 +831,7 @@ const LiquidityPoolSimulator = () => {
                         fontSize={11}
                         tickLine={false}
                         axisLine={{ stroke: darkMode ? "#4b5563" : "#d1d5db" }}
+                        tickFormatter={(value) => value.split(':')[0] + ':' + value.split(':')[1]} // Shorter time format
                       />
                       <YAxis
                         tickFormatter={(value) => `$${value.toFixed(6)}`}
@@ -747,10 +839,10 @@ const LiquidityPoolSimulator = () => {
                         fontSize={11}
                         tickLine={false}
                         axisLine={{ stroke: darkMode ? "#4b5563" : "#d1d5db" }}
-                        domain={["dataMin", "dataMax"]}
+                        domain={['auto', 'auto']} // Use auto scaling for better visualization
                       />
                       <Tooltip
-                        formatter={(value: number) => [`$${value.toFixed(6)}`, `${pool.token2Symbol} Price`]}
+                        formatter={(value) => [`$${Number(value).toFixed(6)}`, `${pool.token2Symbol} Price`]}
                         labelFormatter={(label) => `Time: ${label}`}
                         contentStyle={{
                           backgroundColor: darkMode ? "#374151" : "white",
@@ -761,6 +853,7 @@ const LiquidityPoolSimulator = () => {
                           color: darkMode ? "#f3f4f6" : "#1f2937",
                           fontSize: "12px",
                         }}
+                        isAnimationActive={false} // Reduce flickering
                       />
                       <Area
                         type="monotone"
@@ -769,6 +862,7 @@ const LiquidityPoolSimulator = () => {
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorPrice)"
+                        isAnimationActive={false} // Reduce flickering
                       />
                       <Line
                         type="monotone"
@@ -1034,7 +1128,10 @@ const LiquidityPoolSimulator = () => {
                         const results = executeBatchTrades()
                         const validResults = results.filter((r) => r.inputAmount > 0)
                         if (validResults.length > 0) {
-                          alert(`Executed ${validResults.length} trades successfully!`)
+                          setFeedbackMessage({ 
+                            type: 'success', 
+                            text: `Executed ${validResults.length} trades successfully!` 
+                          });
                         }
                       }}
                       className="flex-1 bg-teal-600 hover:bg-teal-700"
@@ -1178,7 +1275,10 @@ const LiquidityPoolSimulator = () => {
                         const results = executeLiquidityOperations()
                         const validResults = results.filter((r) => r.token1Amount && r.token1Amount > 0)
                         if (validResults.length > 0) {
-                          alert(`Executed ${validResults.length} liquidity operations successfully!`)
+                          setFeedbackMessage({ 
+                            type: 'success', 
+                            text: `Executed ${validResults.length} liquidity operations successfully!` 
+                          });
                         }
                       }}
                       className="flex-1 bg-teal-600 hover:bg-teal-700"
@@ -1198,10 +1298,12 @@ const LiquidityPoolSimulator = () => {
 
           {/* Transaction History */}
           <div className="p-3 border-t border-gray-100 dark:border-gray-700">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
-              <div className="px-6 py-4 flex justify-between items-center">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-none overflow-hidden border border-gray-100 dark:border-gray-700">
+              <div className="px-4 py-3 flex justify-between items-center">
                 <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Transaction History</h3>
-                <Badge className="bg-white/20 text-white border-0">{transactions.length} transactions</Badge>
+                <Badge className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 border-0 text-xs px-2 py-0.5 rounded-full">
+                  {transactions.length} transactions
+                </Badge>
               </div>
 
               {transactions.length === 0 ? (
@@ -1218,50 +1320,50 @@ const LiquidityPoolSimulator = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Time</th>
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Type</th>
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Input</th>
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Output</th>
-                        <th className="text-left p-3 text-gray-600 dark:text-gray-300 font-medium text-xs">Rate</th>
+                        <th className="text-left p-2 text-xs text-gray-600 dark:text-gray-300 font-medium">Time</th>
+                        <th className="text-left p-2 text-xs text-gray-600 dark:text-gray-300 font-medium">Type</th>
+                        <th className="text-left p-2 text-xs text-gray-600 dark:text-gray-300 font-medium">Input</th>
+                        <th className="text-left p-2 text-xs text-gray-600 dark:text-gray-300 font-medium">Output</th>
+                        <th className="text-left p-2 text-xs text-gray-600 dark:text-gray-300 font-medium">Rate</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                       {transactions.map((tx, index) => (
                         <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                          <td className="p-4 text-gray-700 dark:text-gray-300">{tx.timestamp}</td>
-                          <td className="p-4">
+                          <td className="p-2 text-xs text-gray-700 dark:text-gray-300">{tx.timestamp}</td>
+                          <td className="p-2">
                             <Badge
                               className={`
                               ${
                                 tx.type === "buy"
-                                  ? "bg-emerald-100 text-emerald-800"
+                                  ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
                                   : tx.type === "sell"
-                                    ? "bg-amber-100 text-amber-800"
+                                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
                                     : tx.type === "add_liquidity"
-                                      ? "bg-blue-100 text-blue-800"
-                                      : "bg-red-100 text-red-800"
+                                      ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
                               }
-                              rounded-md font-medium px-3 py-1
+                              rounded-full text-xs font-medium px-2 py-0.5 inline-flex items-center
                             `}
                             >
-                              {tx.type === "buy" && <ArrowUpRight className="h-3 w-3 mr-1 inline" />}
-                              {tx.type === "sell" && <ArrowDownRight className="h-3 w-3 mr-1 inline" />}
-                              {tx.type === "add_liquidity" && <Plus className="h-3 w-3 mr-1 inline" />}
-                              {tx.type === "remove_liquidity" && <Minus className="h-3 w-3 mr-1 inline" />}
+                              {tx.type === "buy" && <ArrowUpRight className="h-2.5 w-2.5 mr-0.5" />}
+                              {tx.type === "sell" && <ArrowDownRight className="h-2.5 w-2.5 mr-0.5" />}
+                              {tx.type === "add_liquidity" && <Plus className="h-2.5 w-2.5 mr-0.5" />}
+                              {tx.type === "remove_liquidity" && <Minus className="h-2.5 w-2.5 mr-0.5" />}
                               {tx.type === "add_liquidity"
-                                ? "Add LP"
+                                ? "Add"
                                 : tx.type === "remove_liquidity"
-                                  ? "Remove LP"
+                                  ? "Remove"
                                   : tx.type === "buy"
                                     ? "Buy"
                                     : "Sell"}
                             </Badge>
                           </td>
-                          <td className="p-4">
+                          <td className="p-2">
                             <div className="flex items-center">
                               {tx.type.includes("liquidity") ? (
                                 <div>
-                                  <div className="font-medium text-gray-800 dark:text-gray-200">
+                                  <div className="text-xs font-medium text-gray-800 dark:text-gray-200">
                                     {tx.token1Amount?.toFixed(4)} {tx.inputToken}
                                   </div>
                                   <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -1269,31 +1371,31 @@ const LiquidityPoolSimulator = () => {
                                   </div>
                                 </div>
                               ) : (
-                                <div className="font-medium text-gray-800 dark:text-gray-200">
+                                <div className="text-xs font-medium text-gray-800 dark:text-gray-200">
                                   {tx.inputAmount.toFixed(4)} {tx.inputToken}
                                 </div>
                               )}
                             </div>
                           </td>
-                          <td className="p-4">
+                          <td className="p-2">
                             {tx.type.includes("liquidity") ? (
-                              <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-md inline-block">
-                                Liquidity Position
-                              </div>
+                              <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-xs px-2 py-0.5 rounded-full">
+                                LP Position
+                              </Badge>
                             ) : (
-                              <div className="font-medium text-gray-800 dark:text-gray-200">
+                              <div className="text-xs font-medium text-gray-800 dark:text-gray-200">
                                 {tx.outputAmount.toFixed(4)} {tx.outputToken}
                               </div>
                             )}
                           </td>
-                          <td className="p-4">
-                            <div className="font-medium text-teal-700 dark:text-teal-300">
+                          <td className="p-2">
+                            <div className="text-xs font-medium text-teal-700 dark:text-teal-300">
                               {tx.type.includes("liquidity")
                                 ? `${tx.price.toFixed(4)}`
                                 : `${(tx.outputAmount / tx.inputAmount).toFixed(4)}`}
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {tx.type.includes("liquidity") ? "Pool ratio" : "Exchange rate"}
+                              {tx.type.includes("liquidity") ? "Pool ratio" : "Rate"}
                             </div>
                           </td>
                         </tr>
